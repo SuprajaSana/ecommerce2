@@ -3,6 +3,7 @@ import { useState ,useEffect } from "react";
 
 import MoviesList from "./components/MoviesList";
 import "./App.css";
+import AddMovies from "./components/AddMovies";
 
 let id;
 
@@ -50,20 +51,25 @@ function App() {
     fetchDataHandler()
   },[fetchDataHandler])
 
-   const cancelHandler=()=>
+  const addMovieHandler=(NewMovieObj)=>
+  {
+    console.log(NewMovieObj)
+  }
+
+  /* const cancelHandler=()=>
     {
       clearInterval(id)
-    } 
+    } */ 
     
    
 
   return( 
     <React.Fragment>
       <section>
-        <button onClick={fetchDataHandler}>Fetch Movies</button>
+        <AddMovies onAddMovie={addMovieHandler}></AddMovies>
       </section>
       <section>
-        <button onClick={cancelHandler}>CANCEL</button>
+        <button onClick={fetchDataHandler}>Fetch Movies</button>
       </section>
       <section>
         {!pageLoading && movies.length > 0 && <MoviesList movies={movies} />}
