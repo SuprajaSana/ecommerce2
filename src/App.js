@@ -1,45 +1,75 @@
-import React from 'react';
-import { useState } from 'react';
+import React from "react";
+import { useState } from "react";
 
-import MoviesList from './components/MoviesList';
-import './App.css';
+import MoviesList from "./components/MoviesList";
+import "./App.css";
+
+let id;
 
 function App() {
-  
-  const [movies,setMovies]=useState([]) 
-  const [pageLoading,setPageLoading]=useState(false)
+  const [movies, setMovies] = useState([]);
+  const [pageLoading, setPageLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  async function fetchDataHandler(){
-    setPageLoading(true)
-    const response=await fetch('https://swapi.dev/api/films/')
-     const data =await response.json()
 
-      const transformedData=data.results.map((movieData)=>{
-         return{
-          id:movieData.episode_id,
-          title:movieData.title,
-          openingText:movieData.opening_crawl,
-          releaseDate:movieData.release_date,
-         }         
-      })
+  let response;
+
+   async function fetchDataHandler() {
+    setPageLoading(true);
+    setError(null);
+      try {
+       response =await fetch("https://swapi.dev/api/film/");
+
+      id=setInterval(() => {
+         response = fetch("https://swapi.dev/api/film/")
+      }, 5000); 
+
+      if (!response.ok) {
+        throw new Error("Something went wrong...retrying");
+      }
+
+      const data =await response.json();
+
+      const transformedData = data.results.map((movieData) => {
+        return {
+          id: movieData.episode_id,
+          title: movieData.title,
+          openingText: movieData.opening_crawl,
+          releaseDate: movieData.release_date,
+        };
+      });
       setMovies(transformedData);
-      setPageLoading(false)
+    } catch (error) {
+      setError(error.message);
     }
+    setPageLoading(false);
+  }
+ 
+   const cancelHandler=()=>
+    {
+      clearInterval(id)
+    } 
+    
+   
 
-  return (
+  return( 
     <React.Fragment>
       <section>
-       <button onClick={fetchDataHandler}>Fetch Movies</button>
+        <button onClick={fetchDataHandler}>Fetch Movies</button>
       </section>
       <section>
-        {!pageLoading && movies.length>0 && <MoviesList movies={movies}/>}
-        {!pageLoading && movies.length===0 && <p>No Movies Found</p>}
+        <button onClick={cancelHandler}>CANCEL</button>
+      </section>
+      <section>
+        {!pageLoading && movies.length > 0 && <MoviesList movies={movies} />}
+        {!pageLoading && movies.length === 0 && !error && (
+          <p>No Movies Found</p>
+        )}
+        {!pageLoading && error && <p>{error}</p>}
         {pageLoading && <p>Loading...</p>}
-
       </section>
     </React.Fragment>
   );
 }
 
 export default App;
-
