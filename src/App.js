@@ -5,21 +5,18 @@ import MoviesList from "./components/MoviesList";
 import "./App.css";
 import AddMovies from "./components/AddMovies";
 
-let id;
+//let id;
 
 function App() {
   const [movies, setMovies] = useState([]);
   const [pageLoading, setPageLoading] = useState(false);
   const [error, setError] = useState(null);
 
-
-  let response;
-
    const fetchDataHandler=useCallback(async()=> {
     setPageLoading(true);
     setError(null);
       try {
-       response =await fetch("https://swapi.dev/api/films/");
+       const response =await fetch('https://react-first-6bd48-default-rtdb.firebaseio.com/movies.json');
 
       /*id=setInterval(() => {
          response = fetch("https://swapi.dev/api/film/")
@@ -31,14 +28,18 @@ function App() {
 
       const data =await response.json();
 
-      const transformedData = data.results.map((movieData) => {
-        return {
-          id: movieData.episode_id,
-          title: movieData.title,
-          openingText: movieData.opening_crawl,
-          releaseDate: movieData.release_date,
-        };
-      });
+      const transformedData=[];
+
+      for(const key in data)
+      {
+        transformedData.push({
+          id:key,
+          title:data[key].title,
+          openingText:data[key].openingText,
+          releaseDate:data[key].releaseDate, 
+        })
+      }
+
       setMovies(transformedData);
     } catch (error) {
       setError(error.message);
@@ -51,9 +52,27 @@ function App() {
     fetchDataHandler()
   },[fetchDataHandler])
 
-  const addMovieHandler=(NewMovieObj)=>
+  async function  addMovieHandler(NewMovieObj)
   {
-    console.log(NewMovieObj)
+    const response=await fetch('https://react-first-6bd48-default-rtdb.firebaseio.com/movies.json', 
+    {
+      method:'POST',
+      body:JSON.stringify(NewMovieObj),
+      headers : {
+        'Content-Type':'application/json'
+      }
+    }) 
+    const data=await response.json()
+  }
+
+  async function deleteHandler(id)
+  {
+     const response=await fetch('https://react-first-6bd48-default-rtdb.firebaseio.com/movies.json',
+     {
+      method:'DELETE',
+      data:id,
+     })
+     const data=await response.json()
   }
 
   /* const cancelHandler=()=>
@@ -67,6 +86,9 @@ function App() {
     <React.Fragment>
       <section>
         <AddMovies onAddMovie={addMovieHandler}></AddMovies>
+      </section>
+      <section>
+      <button onClick={deleteHandler}>DELETE</button>
       </section>
       <section>
         <button onClick={fetchDataHandler}>Fetch Movies</button>
