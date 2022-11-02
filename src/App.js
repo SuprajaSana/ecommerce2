@@ -1,5 +1,5 @@
-import React from "react";
-import { useState } from "react";
+import React, { useCallback } from "react";
+import { useState ,useEffect } from "react";
 
 import MoviesList from "./components/MoviesList";
 import "./App.css";
@@ -14,15 +14,15 @@ function App() {
 
   let response;
 
-   async function fetchDataHandler() {
+   const fetchDataHandler=useCallback(async()=> {
     setPageLoading(true);
     setError(null);
       try {
-       response =await fetch("https://swapi.dev/api/film/");
+       response =await fetch("https://swapi.dev/api/films/");
 
-      id=setInterval(() => {
+      /*id=setInterval(() => {
          response = fetch("https://swapi.dev/api/film/")
-      }, 5000); 
+      }, 5000);*/ 
 
       if (!response.ok) {
         throw new Error("Something went wrong...retrying");
@@ -43,8 +43,13 @@ function App() {
       setError(error.message);
     }
     setPageLoading(false);
-  }
+  },[])
  
+  useEffect(()=>
+  {
+    fetchDataHandler()
+  },[fetchDataHandler])
+
    const cancelHandler=()=>
     {
       clearInterval(id)
