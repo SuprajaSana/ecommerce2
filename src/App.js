@@ -63,24 +63,13 @@ function App() {
       }
     }) 
     const data=await response.json()
-  }
-
-  async function deleteHandler(id)
-  {
-     const response=await fetch('https://react-first-6bd48-default-rtdb.firebaseio.com/movies.json',
-     {
-      method:'DELETE',
-      data:id,
-     })
-     const data=await response.json()
+    console.log(data)
   }
 
   /* const cancelHandler=()=>
     {
       clearInterval(id)
     } */ 
-    
-   
 
   return( 
     <React.Fragment>
@@ -88,13 +77,10 @@ function App() {
         <AddMovies onAddMovie={addMovieHandler}></AddMovies>
       </section>
       <section>
-      <button onClick={deleteHandler}>DELETE</button>
-      </section>
-      <section>
         <button onClick={fetchDataHandler}>Fetch Movies</button>
       </section>
       <section>
-        {!pageLoading && movies.length > 0 && <MoviesList movies={movies} />}
+        {!pageLoading && movies.length > 0 && <MoviesList movies={movies}/>}
         {!pageLoading && movies.length === 0 && !error && (
           <p>No Movies Found</p>
         )}
